@@ -69,13 +69,33 @@ public class Application {
     public String index(@RequestBody ArenaUpdate arenaUpdate) {
         writeCommittedStream.send(arenaUpdate.arena);
 
-        if (isAnyoneInRange(arenaUpdate)) {
+        String me = arenaUpdate._links.self.href;
+        PlayerState myState = arenaUpdate.arena.state.get(me);
+        if(wasHit(arenaUpdate)) {
+            if(!isAnyoneInRange(arenaUpdate)) {
+                System.out.print("Moving forward");  
+                return "F";
+            } else {
+                System.out.print("Turning left");
+                return "L";
+            }
+        } else if (isAnyoneInRange(arenaUpdate)) {
             return "T";
         } else {
             String[] commands = new String[] { "F", "R", "L", "T" };
             int i = new Random().nextInt(3);
             return commands[i];
         }
+    }
+
+    boolean wasHit(ArenaUpdate arenaUpdate) {
+        String me = arenaUpdate._links.self.href;
+        PlayerState myState = arenaUpdate.arena.state.get(me);
+        if(myState.wasHit) {
+            System.out.print("I was hit. Escaping");    
+            return true;
+        }
+        return false;
     }
 
     boolean isAnyoneInRange(ArenaUpdate arenaUpdate) {
