@@ -72,13 +72,9 @@ public class Application {
         String me = arenaUpdate._links.self.href;
         PlayerState myState = arenaUpdate.arena.state.get(me);
         if(wasHit(arenaUpdate)) {
-            if(!isAnyoneInRange(arenaUpdate)) {
-                System.out.print("Moving forward");  
-                return "F";
-            } else {
-                System.out.print("Turning left");
-                return "L";
-            }
+            String[] commands = new String[] { "F", "R", "L", "T" };
+            int i = new Random().nextInt(3);
+            return commands[i];
         } else if (isAnyoneInRange(arenaUpdate)) {
             return "T";
         } else {
